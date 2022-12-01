@@ -15,7 +15,7 @@ const demoPartnerId = "f167CmPA";
 
 export default function Home() {
   const [mounted, setMounted] = useState<boolean>(false)
-  const [showScrollLabel, setshowScrollLabel] = useState<boolean>(false)
+  const [showScrollLabel, setshowScrollLabel] = useState<boolean>(true)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [scrollContainerHeight, setScrollContainerHeight] = useState<number>(2000)
 
@@ -28,6 +28,8 @@ export default function Home() {
   const [email, setEmail] = useState<string>("");
   const [clientName, setClientName] = useState<string>("");
   const [partnerPayload, setPartnerPayload] = useState<string>("");
+  const [callbackObject, setcallbackObject] =
+    useState<CallbackObjectType>();
 
   useEffect(() => {
     setMounted(true)
@@ -37,10 +39,14 @@ export default function Home() {
   const handleCallback = (callbackObject: CallbackObjectType) => {
     /* The callback function returns the client ID as well as all channel IDs, for which you're enabled to fetch the API key via the Partner API */
 
-    console.log("client ID: " + callbackObject.client);
-    console.log("channel IDs: " + callbackObject.channels);
-    if (callbackObject.revokedChannels) {
-      console.log("revoked channel IDs: " + callbackObject.revokedChannels);
+    if (mounted) {
+      setcallbackObject(callbackObject);
+
+      console.log("Client ID: " + callbackObject.client);
+      console.log("Channel IDs: " + callbackObject.channels);
+      if (callbackObject.revokedChannels) {
+        console.log("Revoked Channel IDs: " + callbackObject.revokedChannels);
+      }
     }
   };
 
@@ -75,9 +81,9 @@ export default function Home() {
         <Header />
 
         <div className="flex flex-col pt-4 px-8 grow h-1/3">
-          <div className="h-1/3 grow overflow-hidden flex flex-row pt-6 pb-6 gap-12">
+          <div className="h-1/3 grow overflow-hidden flex flex-row pt-6 pb-6 gap-6">
             <div
-              className="overflow-auto relative grow-0"
+              className="overflow-auto relative grow-0 pr-6"
               onScroll={handleScroll}
               ref={scrollContainerRef}
             >
@@ -172,7 +178,7 @@ export default function Home() {
                       <path
                         fillRule="evenodd"
                         d="M10 5a.75.75 0 01.75.75v6.638l1.96-2.158a.75.75 0 111.08 1.04l-3.25 3.5a.75.75 0 01-1.08 0l-3.25-3.5a.75.75 0 111.08-1.04l1.96 2.158V5.75A.75.75 0 0110 5z"
-                        clip-rule="evenodd"
+                        clipRule="evenodd"
                       />
                     </svg>
                     Scroll to reveal all parameters
@@ -185,11 +191,11 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-col grow">
+            <div className="flex flex-col grow pr-6">
               <p className="text-md font-bold text-gray-700 flex-none">
                 Preview
               </p>
-              <div className="mt-2 p-6 bg-gray-100 rounded-md grow">
+              <div className="mt-2 p-6 bg-dots rounded-md grow border border-gray-100">
                 <div className="w-full h-full flex flex-col items-center justify-center">
                   {mounted && (
                     <ConnectButton
@@ -218,8 +224,20 @@ export default function Home() {
               <p className="text-md font-bold text-gray-700 flex-none">
                 Console
               </p>
-              <div className="mt-2 p-6 bg-gray-800 rounded-md grow">
-                {`>`}
+              <div className="mt-2 p-6 bg-gray-800 rounded-md grow text text-white font-mono">
+                {callbackObject ? (
+                  <div className="pb-8">
+                    <p>Client ID: {callbackObject.client}</p>
+                    <p>Channel IDs: {callbackObject.channels}</p>
+                    {callbackObject.revokedChannels && (
+                      <p>
+                        Revoked Channel IDs: {callbackObject.revokedChannels}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  `>_`
+                )}
               </div>
             </div>
           </div>
