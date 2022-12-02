@@ -10,7 +10,7 @@ For a full documentation on the Integrated Onboarding setup visit our [Partner D
 
 ## Demo
 
-→ Access the live demo (link tbd)
+[→ Access the live demo](https://integrated-onboarding-demo.vercel.app/)
 
 When using the provided demo Partner ID, the application will use the 360dialog test environment. You can sign in as an existing client with the following credentials:
 
