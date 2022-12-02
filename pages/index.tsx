@@ -224,7 +224,7 @@ export default function Home() {
               <p className="text-md font-bold text-gray-700 flex-none">
                 Console
               </p>
-              <div className="mt-2 p-6 bg-gray-800 rounded-md grow text text-white font-mono">
+              <div className="mt-2 p-6 bg-gray-800 rounded-md grow text text-white font-mono text-sm">
                 {callbackObject ? (
                   <div className="pb-8">
                     <p>Client ID: {callbackObject.client}</p>
