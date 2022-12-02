@@ -5,36 +5,65 @@ import Header from "../components/Header";
 import Input from "../components/Input";
 import Button from "../components/Button";
 
+import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
+import jsx from "react-syntax-highlighter/dist/cjs/languages/prism/jsx";
+import prism from "react-syntax-highlighter/dist/cjs/styles/prism/prism";
+import { dedent } from "ts-dedent";
+
+SyntaxHighlighter.registerLanguage("jsx", jsx);
+
 type CallbackObjectType = {
   client: string;
   channels: string[];
   revokedChannels?: string[];
 };
 
+type QueryParametersType = {
+  email: string;
+  clientName: string;
+  partnerPayload: string;
+  redirectUrl: string;
+  forwardState: string;
+};
+
 const demoPartnerId = "f167CmPA";
 
 export default function Home() {
-  const [mounted, setMounted] = useState<boolean>(false)
-  const [showScrollLabel, setshowScrollLabel] = useState<boolean>(true)
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const [scrollContainerHeight, setScrollContainerHeight] = useState<number>(2000)
-
+  const [mounted, setMounted] = useState<boolean>(false);
+  const [showScrollLabel, setshowScrollLabel] = useState<boolean>(true);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [scrollContainerHeight, setScrollContainerHeight] =
+    useState<number>(2000);
 
   const [partnerId, setPartnerId] = useState<string>("");
   const [label, setLabel] = useState<string>("");
-  const [redirectUrl, setRedirectUrl] = useState<string>("");
-  const [forwardState, setForwardState] = useState<string>("");
   const [number, setNumber] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [clientName, setClientName] = useState<string>("");
-  const [partnerPayload, setPartnerPayload] = useState<string>("");
-  const [callbackObject, setcallbackObject] =
-    useState<CallbackObjectType>();
+  const [queryParametersState, setQueryParamatersState] =
+    useState<QueryParametersType>({
+      email: "",
+      clientName: "",
+      partnerPayload: "",
+      redirectUrl: "",
+      forwardState: "",
+    });
+  const [queryParametersLiteral, setQueryParamatersLiteral] =
+    useState<string>("");
+
+  const [callbackObject, setcallbackObject] = useState<CallbackObjectType>();
+
+  const handleQueryParameterChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value } = e.target;
+    setQueryParamatersState((queryParametersState) => ({
+      ...queryParametersState,
+      [name]: value,
+    }));
+  };
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
-
+    setMounted(true);
+  }, []);
 
   const handleCallback = (callbackObject: CallbackObjectType) => {
     /* The callback function returns the client ID as well as all channel IDs, for which you're enabled to fetch the API key via the Partner API */
@@ -52,9 +81,9 @@ export default function Home() {
 
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
     if ((e.target as HTMLElement).scrollTop < 10) {
-      setshowScrollLabel(true)
+      setshowScrollLabel(true);
     } else {
-      setshowScrollLabel(false)
+      setshowScrollLabel(false);
     }
   };
 
@@ -62,9 +91,37 @@ export default function Home() {
     if (scrollContainerRef.current != null) {
       setScrollContainerHeight(scrollContainerRef.current.clientHeight - 65);
     }
-    
   }, []);
 
+  useEffect(() => {
+    returnQueryParameterLiteral();
+  }, [queryParametersState]);
+
+  const returnQueryParameterLiteral = () => {
+  
+    const parameters = [
+      { stateVar: "email", queryParam: "email" },
+      { stateVar: "clientName", queryParam: "name" },
+      { stateVar: "partnerPayload", queryParam: "partner" },
+      { stateVar: "forwardState", queryParam: "state" },
+      { stateVar: "redirectUrl", queryParam: "redirect_url" },
+    ];
+
+    var literalStringArr: string[] = [];
+
+    parameters.forEach((v) => {
+      if (
+        queryParametersState[v.stateVar as keyof QueryParametersType] !== ""
+      ) {
+        literalStringArr.push(
+          `    ${v.queryParam}: "${
+            queryParametersState[v.stateVar as keyof QueryParametersType]
+          }",`
+        );
+      }
+    });
+    setQueryParamatersLiteral(dedent(`${literalStringArr.join("\n")}`));
+  };
 
   return (
     <div className="w-screen h-screen overflow-hidden">
@@ -95,7 +152,7 @@ export default function Home() {
                 <Input
                   label="Partner ID"
                   value={partnerId}
-                  onChange={setPartnerId}
+                  onChange={(e) => setPartnerId(e.target.value)}
                   placeholder="Your Partner ID"
                   button={{
                     paddingRight: "pr-44",
@@ -112,7 +169,7 @@ export default function Home() {
                 <Input
                   label="Button Label"
                   value={label}
-                  onChange={setLabel}
+                  onChange={(e) => setLabel(e.target.value)}
                   optional
                   placeholder="Create your WhatsApp Business Account"
                 />
@@ -126,14 +183,16 @@ export default function Home() {
 
                 <Input
                   label="Redirect URL"
-                  value={redirectUrl}
-                  onChange={setRedirectUrl}
+                  name="redirectUrl"
+                  value={queryParametersState.redirectUrl}
+                  onChange={handleQueryParameterChange}
                   optional
                 />
                 <Input
                   label="State"
-                  value={forwardState}
-                  onChange={setForwardState}
+                  name="forwardState"
+                  value={queryParametersState.forwardState}
+                  onChange={handleQueryParameterChange}
                   optional
                 />
 
@@ -142,25 +201,28 @@ export default function Home() {
                 <Input
                   label="Number"
                   value={number}
-                  onChange={setNumber}
+                  onChange={(e) => setNumber(e.target.value)}
                   optional
                 />
                 <Input
                   label="Email"
-                  value={email}
-                  onChange={setEmail}
+                  name="email"
+                  value={queryParametersState.email}
+                  onChange={handleQueryParameterChange}
                   optional
                 />
                 <Input
                   label="Name"
-                  value={clientName}
-                  onChange={setClientName}
+                  name="clientName"
+                  value={queryParametersState.clientName}
+                  onChange={handleQueryParameterChange}
                   optional
                 />
                 <Input
                   label="Client ID (Partner Payload)"
-                  value={partnerPayload}
-                  onChange={setPartnerPayload}
+                  name="partnerPayload"
+                  value={queryParametersState.partnerPayload}
+                  onChange={handleQueryParameterChange}
                   optional
                 />
 
@@ -191,30 +253,79 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-col grow pr-6">
-              <p className="text-md font-bold text-gray-700 flex-none">
-                Preview
-              </p>
-              <div className="mt-2 p-6 bg-dots rounded-md grow border border-gray-100">
-                <div className="w-full h-full flex flex-col items-center justify-center">
+            <div className="flex flex-col grow pr-6 max-w-2xl">
+              <div className="flex flex-col grow">
+                <p className="text-md font-bold text-gray-700 flex-none">
+                  Preview
+                </p>
+                <div className="mt-2 p-6 bg-dots rounded-md grow border border-gray-100">
+                  <div className="w-full h-full flex flex-col items-center justify-center">
+                    {mounted && (
+                      <ConnectButton
+                        partnerId={partnerId}
+                        className="bg-gray-800 text-white hover:bg-gray-900 drop-shadow-xl rounded-md px-4 py-3 outline-none focus:ring focus:ring-gray-900 focus:ring-offset-2"
+                        label={
+                          label
+                            ? label
+                            : "Create your WhatsApp Business Account"
+                        }
+                        callback={handleCallback}
+                        env={partnerId === demoPartnerId ? "staging" : "prod"}
+                        requestedNumber={number}
+                        queryParameters={{
+                          redirect_url: queryParametersState.redirectUrl
+                            ? queryParametersState.redirectUrl
+                            : window.origin,
+                          ...(queryParametersState.forwardState && {
+                            state: queryParametersState.forwardState,
+                          }),
+                          ...(queryParametersState.email && {
+                            email: queryParametersState.email,
+                          }),
+                          ...(queryParametersState.clientName && {
+                            name: queryParametersState.clientName,
+                          }),
+                          ...(queryParametersState.partnerPayload && {
+                            partner: queryParametersState.partnerPayload,
+                          }),
+                        }}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col grow pt-6 h-2/3">
+                <p className="text-md font-bold text-gray-700 flex-none">
+                  Code
+                </p>
+                <div className="mt-2 bg-gray-50 rounded-md grow text text-gray-900 font-mono text-sm h-full">
                   {mounted && (
-                    <ConnectButton
-                      partnerId={partnerId}
-                      className="bg-gray-800 text-white hover:bg-gray-900 drop-shadow-xl rounded-md px-4 py-3 outline-none focus:ring focus:ring-gray-900 focus:ring-offset-2"
-                      label={
-                        label ? label : "Create your WhatsApp Business Account"
-                      }
-                      callback={handleCallback}
-                      env={partnerId === demoPartnerId ? "staging" : "prod"}
-                      requestedNumber={number}
-                      queryParameters={{
-                        redirect_url: redirectUrl ? redirectUrl : window.origin,
-                        ...(forwardState && { state: forwardState }),
-                        ...(email && { email: email }),
-                        ...(clientName && { name: clientName }),
-                        ...(partnerPayload && { partner: partnerPayload }),
-                      }}
-                    />
+                    <SyntaxHighlighter
+                      language="jsx"
+                      style={prism}
+                      customStyle={{ background: "transparent" }}
+                      className="w-full h-full p-6"
+                      // wrapLongLines
+                    >
+                      {dedent(
+                        `<ConnectButton
+    partnerId={${partnerId}}
+    callback={() => {
+      console.log("Client ID: " + callbackObject.client);
+      console.log("Channel IDs: " + callbackObject.channels);
+      if (callbackObject.revokedChannels) {
+        console.log("Revoked Channel IDs: " + callbackObject.revokedChannels);
+      }
+    }}
+    className="" // <-- Insert your own styles via className definition or through inline styling
+    label={${label ? label : "Create your WhatsApp Business Account"}}
+    ${number && "requestedNumber={number}"}
+    ${queryParametersLiteral && queryParametersLiteral}
+  />
+  `
+                      )}
+                    </SyntaxHighlighter>
                   )}
                 </div>
               </div>
