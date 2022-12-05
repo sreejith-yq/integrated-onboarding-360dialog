@@ -356,7 +356,7 @@ export default function Home() {
               </div>
 
               <div className="flex flex-col grow pt-6">
-                <div className="flex flex-row items-baseline justify-between w-full">
+                <div className="flex flex-row items-baseline justify-between w-full pb-2">
                   <p className="text-md font-bold text-gray-700 flex-none">
                     Connect Button Code
                   </p>
@@ -385,13 +385,13 @@ export default function Home() {
                     </svg>
                   </a>
                 </div>
-                <div className="relative mt-2 bg-gray-50 rounded-md grow text text-gray-900 text-sm">
+                <div className="relative bg-gray-50 rounded-md grow text text-gray-900 text-sm">
                   {mounted && (
                     <SyntaxHighlighter
                       language="jsx"
                       style={prism}
                       customStyle={{ background: "transparent" }}
-                      className="w-full h-full p-6 max-w-xs lg:max-w-md xl:max-w-lg 2xl:max-w-full"
+                      className="w-full h-full p-6 max-w-xs lg:max-w-md xl:max-w-lg 2xl:max-w-full m-0"
                     >
                       {generateCodeSnippet()}
                     </SyntaxHighlighter>
