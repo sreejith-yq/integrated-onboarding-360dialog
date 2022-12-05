@@ -346,7 +346,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex flex-col grow pt-6 h-2/3">
+              <div className="flex flex-col grow pt-6 max-h-fit">
                 <p className="text-md font-bold text-gray-700 flex-none">
                   Connect Button Code
                 </p>
