@@ -114,7 +114,7 @@ export default function Home() {
         queryParametersState[v.stateVar as keyof QueryParametersType] !== ""
       ) {
         literalStringArr.push(
-          `    ${v.queryParam}: "${
+          `${v.queryParam}: "${
             queryParametersState[v.stateVar as keyof QueryParametersType]
           }",`
         );
@@ -138,14 +138,14 @@ export default function Home() {
         <Header />
 
         <div className="flex flex-col pt-4 px-8 grow h-1/3">
-          <div className="h-1/3 grow overflow-hidden flex flex-row pt-6 pb-6 gap-6">
+          <div className="h-1/3 grow overflow-hidden flex flex-row pt-6 pb-6 gap-6 min-w-fit">
             <div
-              className="overflow-auto relative grow-0 pr-6"
+              className="overflow-auto relative grow-0 pr-6 min-w-fit"
               onScroll={handleScroll}
               ref={scrollContainerRef}
             >
               <p className="text-md font-bold text-gray-700">Configure</p>
-              <div className="relative flex flex-col px-2 py-8 gap-6 max-w-md">
+              <div className="relative flex flex-col px-2 py-8 gap-6 min-w-fit max-w-md">
                 <p className="text-sm font-medium text-gray-900 mt-2">
                   General
                 </p>
@@ -253,7 +253,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-col grow pr-6 max-w-2xl">
+            <div className="flex flex-col grow pr-6">
               <div className="flex flex-col grow">
                 <p className="text-md font-bold text-gray-700 flex-none">
                   Preview
@@ -305,7 +305,7 @@ export default function Home() {
                       language="jsx"
                       style={prism}
                       customStyle={{ background: "transparent" }}
-                      className="w-full h-full p-6"
+                      className="w-full h-full p-6 max-w-xs lg:max-w-md xl:max-w-lg 2xl:max-w-full"
                       // wrapLongLines
                     >
                       {dedent(
@@ -331,7 +331,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-col w-1/4">
+            <div className="flex flex-col w-1/4 max-w-xl">
               <p className="text-md font-bold text-gray-700 flex-none">
                 Console
               </p>
