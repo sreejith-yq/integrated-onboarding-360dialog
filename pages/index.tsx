@@ -46,9 +46,6 @@ export default function Home() {
       redirectUrl: "",
       forwardState: "",
     });
-  const [queryParametersLiteral, setQueryParamatersLiteral] =
-    useState<string>("");
-
   const [callbackObject, setcallbackObject] = useState<CallbackObjectType>();
 
   const handleQueryParameterChange = (
@@ -93,12 +90,60 @@ export default function Home() {
     }
   }, []);
 
-  useEffect(() => {
-    returnQueryParameterLiteral();
-  }, [queryParametersState]);
 
   const returnQueryParameterLiteral = () => {
   
+    const parameters = [
+      { stateVar: "email", queryParam: "email" },
+      { stateVar: "clientName", queryParam: "name" },
+      { stateVar: "partnerPayload", queryParam: "partner" },
+      { stateVar: "forwardState", queryParam: "state" },
+      { stateVar: "redirectUrl", queryParam: "redirect_url" },
+    ];
+
+    var literalStringArr: string[] = [];
+
+    parameters.forEach((v, idx) => {
+      if (
+        queryParametersState[v.stateVar as keyof QueryParametersType] !== ""
+      ) {
+        literalStringArr.push(
+          `${v.queryParam}: "${
+            queryParametersState[v.stateVar as keyof QueryParametersType]
+          }"`
+        );
+      }
+    });
+
+    if (literalStringArr.length > 0) {
+      return (`queryParameters={{\n\t${literalStringArr.join(",\n\t")}\n}}`);
+    } else {
+      return ``
+    }
+    
+  };
+
+
+  const generateCodeSnippet = ():string => {
+    let textBase = dedent(
+      `<ConnectButton
+        partnerId={${partnerId}}
+        callback={() => {
+          console.log("Client ID: " + callbackObject.client);
+          console.log("Channel IDs: " + callbackObject.channels);
+          if (callbackObject.revokedChannels) {
+            console.log("Revoked Channel IDs: " + callbackObject.revokedChannels);
+          }
+        }}
+        className="" // <-- Insert your own styles via className definition or through inline styling
+        label={${label ? label : "Create your WhatsApp Business Account"}}
+        `
+    );
+
+    if (number) {
+      textBase = textBase.concat(`\nrequestedNumber="${number}"`)
+    }
+
     const parameters = [
       { stateVar: "email", queryParam: "email" },
       { stateVar: "clientName", queryParam: "name" },
@@ -120,8 +165,14 @@ export default function Home() {
         );
       }
     });
-    setQueryParamatersLiteral(dedent(`${literalStringArr.join("\n")}`));
-  };
+
+    let queryParams = returnQueryParameterLiteral();
+    if (queryParams !== ``) {
+      textBase = textBase.concat("\n", queryParams)
+    }
+  
+    return textBase.concat( "\n/>")
+  }
 
   return (
     <div className="w-screen h-screen overflow-hidden">
@@ -297,7 +348,7 @@ export default function Home() {
 
               <div className="flex flex-col grow pt-6 h-2/3">
                 <p className="text-md font-bold text-gray-700 flex-none">
-                  Code
+                  Connect Button Code
                 </p>
                 <div className="mt-2 bg-gray-50 rounded-md grow text text-gray-900 font-mono text-sm h-full">
                   {mounted && (
@@ -306,25 +357,8 @@ export default function Home() {
                       style={prism}
                       customStyle={{ background: "transparent" }}
                       className="w-full h-full p-6 max-w-xs lg:max-w-md xl:max-w-lg 2xl:max-w-full"
-                      // wrapLongLines
                     >
-                      {dedent(
-                        `<ConnectButton
-    partnerId={${partnerId}}
-    callback={() => {
-      console.log("Client ID: " + callbackObject.client);
-      console.log("Channel IDs: " + callbackObject.channels);
-      if (callbackObject.revokedChannels) {
-        console.log("Revoked Channel IDs: " + callbackObject.revokedChannels);
-      }
-    }}
-    className="" // <-- Insert your own styles via className definition or through inline styling
-    label={${label ? label : "Create your WhatsApp Business Account"}}
-    ${number && "requestedNumber={number}"}
-    ${queryParametersLiteral && queryParametersLiteral}
-  />
-  `
-                      )}
+                      {generateCodeSnippet()}
                     </SyntaxHighlighter>
                   )}
                 </div>
