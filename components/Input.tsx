@@ -7,14 +7,15 @@ type ButtonPropType = {
 
 interface IInput {
   label: string;
+  name?: string;
   value: string;
-  onChange: (v: string) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   optional?: boolean;
   button?: ButtonPropType;
 }
 
-const Input = ({ label, value, onChange, placeholder, optional, button }: IInput) => {
+const Input = ({ label, name, value, onChange, placeholder, optional, button }: IInput) => {
   return (
     <div>
       <div className="flex flex-row justify-between items-baseline">
@@ -31,12 +32,12 @@ const Input = ({ label, value, onChange, placeholder, optional, button }: IInput
       <div className="relative mt-1 rounded-md shadow-sm">
         <input
           type="text"
-          name={label}
+          name={name ? name : label}
           id={label}
           className={`block w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-blue-500 focus:ring-blue-500 placeholder:text-gray-300 text-sm placeholder:text-sm ${button && button.paddingRight}`}
           placeholder={placeholder}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={onChange}
         />
         {button && (
           <div className="absolute inset-y-0 right-0 p-1 mt-px">

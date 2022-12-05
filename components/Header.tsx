@@ -19,6 +19,7 @@ const Header = () => {
           className="text-sm text-gray-400 px-3 py-1 outline-none hover:text-gray-500"
           href="https://www.360dialog.com/contact#dataprivacy"
           target="_blank"
+          rel="noreferrer"
         >
           Privacy Policy →
         </a>
