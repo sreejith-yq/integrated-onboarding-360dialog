@@ -256,8 +256,10 @@ export default function Home() {
                   optional
                 />
 
+                  <div>
                 <div className="h-px w-full bg-gray-300 mt-9 mb-6" />
                 <p className="text-sm font-medium text-gray-900">Client Data</p>
+                </div>
                 <Input
                   label="Number"
                   value={number}
