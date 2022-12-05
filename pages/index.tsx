@@ -364,6 +364,7 @@ export default function Home() {
                     className="text-sm text-blue-600 px-3 py-1 outline-none hover:text-blue-800 flex flex-row items-center gap-2"
                     href="https://www.npmjs.com/package/360dialog-connect-button"
                     target="_blank"
+                    rel="noreferrer"
                   >
                     NPM Package Docs
                     <svg
@@ -399,10 +400,8 @@ export default function Home() {
                   <div className="absolute top-3 right-3">
                     <Button
                       onClick={() => {
-                        navigator.clipboard.writeText(
-                          generateCodeSnippet()
-                        );
-                        setCopied(true)
+                        navigator.clipboard.writeText(generateCodeSnippet());
+                        setCopied(true);
                       }}
                       outlined
                     >
