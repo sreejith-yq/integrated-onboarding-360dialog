@@ -102,6 +102,7 @@ export default function Home() {
       setScrollContainerHeight(scrollContainerRef.current.clientHeight - 65);
     }
 
+    // Set partner id from query parameter
     if (id) {
       setPartnerId(id as string);
     }
