@@ -9,6 +9,7 @@ import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import jsx from "react-syntax-highlighter/dist/cjs/languages/prism/jsx";
 import prism from "react-syntax-highlighter/dist/cjs/styles/prism/prism";
 import { dedent } from "ts-dedent";
+import { useRouter } from "next/router";
 
 SyntaxHighlighter.registerLanguage("jsx", jsx);
 
@@ -48,6 +49,9 @@ export default function Home() {
     });
   const [callbackObject, setcallbackObject] = useState<CallbackObjectType>();
   const [copied, setCopied] = useState<boolean>(false)
+
+  const router = useRouter();
+  const { id } = router.query;
 
   const handleQueryParameterChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -97,7 +101,11 @@ export default function Home() {
     if (scrollContainerRef.current != null) {
       setScrollContainerHeight(scrollContainerRef.current.clientHeight - 65);
     }
-  }, []);
+
+    if (id) {
+      setPartnerId(id);
+    }
+  }, [id]);
 
 
   const returnQueryParameterLiteral = () => {
