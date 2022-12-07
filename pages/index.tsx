@@ -103,7 +103,7 @@ export default function Home() {
     }
 
     if (id) {
-      setPartnerId(id);
+      setPartnerId(id as string);
     }
   }, [id]);
 
