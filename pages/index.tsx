@@ -466,7 +466,7 @@ export default function Home() {
                 {callbackObject ? (
                   <div className="pb-8">
                     <p>Client ID: {callbackObject.client}</p>
-                    <p>Channel IDs: {callbackObject.channels}</p>
+                    <p>Channel IDs: {callbackObject.channels.join(", ")}</p>
                     {callbackObject.revokedChannels && (
                       <p>
                         Revoked Channel IDs: {callbackObject.revokedChannels}
