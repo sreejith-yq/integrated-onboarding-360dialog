@@ -340,7 +340,7 @@ export default function Home() {
                             : "Create your WhatsApp Business Account"
                         }
                         callback={handleCallback}
-                        env={true ? "staging" : "prod"}
+                        env={partnerId === demoPartnerId ? "staging" : "prod"}
                         requestedNumber={number}
                         queryParameters={{
                           redirect_url: queryParametersState.redirectUrl
