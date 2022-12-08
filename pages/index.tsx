@@ -357,41 +357,49 @@ export default function Home() {
                 <p className="text-md font-bold text-gray-700 flex-none">
                   Preview
                 </p>
-                <div className="mt-2 p-6 bg-dots rounded-md grow border border-gray-100">
+                <div className="mt-2 p-6 bg-dots rounded-md grow border border-gray-100 relative">
                   <div className="w-full h-full flex flex-col items-center justify-center">
                     {mounted && (
-                      <ConnectButton
-                        partnerId={partnerId}
-                        className="bg-gray-800 text-white hover:bg-gray-900 drop-shadow-xl rounded-md px-4 py-3 outline-none focus:ring focus:ring-gray-900 focus:ring-offset-2"
-                        label={
-                          label
-                            ? label
-                            : "Create your WhatsApp Business Account"
-                        }
-                        callback={handleCallback}
-                        env={partnerId === demoPartnerId ? "staging" : "prod"}
-                        requestedNumber={number}
-                        queryParameters={{
-                          redirect_url: queryParametersState.redirectUrl
-                            ? queryParametersState.redirectUrl
-                            : window.origin,
-                          ...(queryParametersState.forwardState && {
-                            state: queryParametersState.forwardState,
-                          }),
-                          ...(queryParametersState.email && {
-                            email: queryParametersState.email,
-                          }),
-                          ...(queryParametersState.clientName && {
-                            name: queryParametersState.clientName,
-                          }),
-                          ...(queryParametersState.partnerPayload && {
-                            partner: queryParametersState.partnerPayload,
-                          }),
-                          ...(queryParametersState.next && {
-                            next: queryParametersState.next,
-                          }),
-                        }}
-                      />
+                      <>
+                        <ConnectButton
+                          disabled={!partnerId}
+                          partnerId={partnerId}
+                          className="bg-gray-800 text-white hover:bg-gray-900 drop-shadow-xl rounded-md px-4 py-3 outline-none focus:ring focus:ring-gray-900 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
+                          label={
+                            label
+                              ? label
+                              : "Create your WhatsApp Business Account"
+                          }
+                          callback={handleCallback}
+                          env={partnerId === demoPartnerId ? "staging" : "prod"}
+                          requestedNumber={number}
+                          queryParameters={{
+                            redirect_url: queryParametersState.redirectUrl
+                              ? queryParametersState.redirectUrl
+                              : window.origin,
+                            ...(queryParametersState.forwardState && {
+                              state: queryParametersState.forwardState,
+                            }),
+                            ...(queryParametersState.email && {
+                              email: queryParametersState.email,
+                            }),
+                            ...(queryParametersState.clientName && {
+                              name: queryParametersState.clientName,
+                            }),
+                            ...(queryParametersState.partnerPayload && {
+                              partner: queryParametersState.partnerPayload,
+                            }),
+                            ...(queryParametersState.next && {
+                              next: queryParametersState.next,
+                            }),
+                          }}
+                        />
+                        {!partnerId && (
+                          <p className="absolute bottom-2 mt-1 text-xs text-red-600">
+                            Please add a Partner ID to enable button
+                          </p>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
