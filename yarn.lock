@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"360dialog-connect-button@0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/360dialog-connect-button/-/360dialog-connect-button-0.7.0.tgz#641f8a528856af59eb17d12a20a4462f12bf1d15"
-  integrity sha512-5wjuWFFQmG+h0BOTjZsZBB2nc6RdO7YZynduTOoS+eoIegKSsWp3W5BDBA2qQ94cDC7Jw5hQqEogYL0rXgOLUg==
+"360dialog-connect-button@0.7.1":
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/360dialog-connect-button/-/360dialog-connect-button-0.7.1.tgz#c4f7f9b4bd8225ced66db7943a4adc207e537b9b"
+  integrity sha512-r9lUIFTgBfpjrufhTP7wpXnhydmgme/f60UFRtmA3ulIgZ7Z9SKBXLDfmp7CifK2LRecMrupAWHqEIH1iP3OzQ==
 
 "@babel/runtime-corejs3@^7.10.2":
   version "7.20.6"
