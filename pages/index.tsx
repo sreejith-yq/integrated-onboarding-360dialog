@@ -25,7 +25,8 @@ type QueryParametersType = {
   partnerPayload: string;
   redirectUrl: string;
   forwardState: string;
-  next: string
+  next: string;
+  hosting_type: string;
 };
 
 const demoPartnerId = "f167CmPA";
@@ -47,7 +48,8 @@ export default function Home() {
       partnerPayload: "",
       redirectUrl: "",
       forwardState: "",
-      next: ""
+      next: "",
+      hosting_type: "",
     });
   const [callbackObject, setcallbackObject] = useState<CallbackObjectType>();
   const [copied, setCopied] = useState<boolean>(false)
@@ -70,7 +72,8 @@ export default function Home() {
     
     setQueryParamatersState((queryParametersState) => ({
       ...queryParametersState,
-      [name]: checked ? "login" : "",
+      ...(name === "next" && { [name]: checked ? "login" : "" }),
+      ...(name === "hosting_type" && { [name]: checked ? "onpremise" : "" }),
     }));
   }
 
@@ -129,6 +132,7 @@ export default function Home() {
       { stateVar: "forwardState", queryParam: "state" },
       { stateVar: "redirectUrl", queryParam: "redirect_url" },
       { stateVar: "next", queryParam: "next" },
+      { stateVar: "hosting_type", queryParam: "hosting_type" },
     ];
 
     var literalStringArr: string[] = [];
@@ -325,6 +329,26 @@ export default function Home() {
                   optional
                 />
 
+                <div>
+                  <div className="h-px w-full bg-gray-300 mt-9 mb-6" />
+                  <p className="text-sm font-medium text-gray-900">
+                    Hosting parameters
+                  </p>
+                </div>
+                <label className="inline-flex relative items-center justify-between cursor-pointer mt-2 pr-1">
+                  <span className="block text-sm font-medium text-gray-500">
+                    Enforce on-premise hosting
+                  </span>
+                  <input
+                    type="checkbox"
+                    name="hosting_type"
+                    value={queryParametersState.hosting_type}
+                    className="sr-only peer"
+                    onChange={handleToggleChange}
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[26px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                </label>
+
                 {showScrollLabel && (
                   <div
                     style={{ top: scrollContainerHeight + "px" }}
@@ -392,6 +416,9 @@ export default function Home() {
                             ...(queryParametersState.next && {
                               next: queryParametersState.next,
                             }),
+                            ...(queryParametersState.hosting_type && {
+                              hosting_type: queryParametersState.hosting_type,
+                            }),
                           }}
                         />
                         {!partnerId && (
@@ -426,12 +453,12 @@ export default function Home() {
                       <path
                         fillRule="evenodd"
                         d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-4a.75.75 0 011.5 0v4A2.25 2.25 0 0112.75 17h-8.5A2.25 2.25 0 012 14.75v-8.5A2.25 2.25 0 014.25 4h5a.75.75 0 010 1.5h-5z"
-                        clip-rule="evenodd"
+                        clipRule="evenodd"
                       />
                       <path
                         fillRule="evenodd"
                         d="M6.194 12.753a.75.75 0 001.06.053L16.5 4.44v2.81a.75.75 0 001.5 0v-4.5a.75.75 0 00-.75-.75h-4.5a.75.75 0 000 1.5h2.553l-9.056 8.194a.75.75 0 00-.053 1.06z"
-                        clip-rule="evenodd"
+                        clipRule="evenodd"
                       />
                     </svg>
                   </a>
