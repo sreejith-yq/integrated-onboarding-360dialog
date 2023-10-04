@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "360dialog-connect-button": "^0.8.0",
+    "@headlessui/react": "^1.7.17",
+    "@heroicons/react": "^2.0.18",
     "@types/node": "18.11.9",
     "@types/react": "18.0.25",
     "@types/react-dom": "18.0.9",

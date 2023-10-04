@@ -10,6 +10,7 @@ import jsx from "react-syntax-highlighter/dist/cjs/languages/prism/jsx";
 import prism from "react-syntax-highlighter/dist/cjs/styles/prism/prism";
 import { dedent } from "ts-dedent";
 import { useRouter } from "next/router";
+import Select from "../components/Select";
 
 SyntaxHighlighter.registerLanguage("jsx", jsx);
 
@@ -27,6 +28,7 @@ type QueryParametersType = {
   forwardState: string;
   next: string;
   hosting_type: string;
+  planSelection: string;
 };
 
 const demoPartnerId = "f167CmPA";
@@ -50,12 +52,20 @@ export default function Home() {
       forwardState: "",
       next: "",
       hosting_type: "",
+      planSelection: "",
     });
   const [callbackObject, setcallbackObject] = useState<CallbackObjectType>();
   const [copied, setCopied] = useState<boolean>(false)
 
   const router = useRouter();
   const { id } = router.query;
+
+  const handlePlanChange = (v: {name: string}) => {
+    setQueryParamatersState((queryParametersState) => ({
+      ...queryParametersState,
+      planSelection: v.name,
+    }));
+  }
 
   const handleQueryParameterChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -133,6 +143,7 @@ export default function Home() {
       { stateVar: "redirectUrl", queryParam: "redirect_url" },
       { stateVar: "next", queryParam: "next" },
       { stateVar: "hosting_type", queryParam: "hosting_type" },
+      { stateVar: "planSelection", queryParam: "plan_selection" },
     ];
 
     var literalStringArr: string[] = [];
@@ -184,6 +195,7 @@ export default function Home() {
       { stateVar: "partnerPayload", queryParam: "partner" },
       { stateVar: "forwardState", queryParam: "state" },
       { stateVar: "redirectUrl", queryParam: "redirect_url" },
+      { stateVar: "planSelection", queryParam: "plan_selection" },
     ];
 
     var literalStringArr: string[] = [];
@@ -328,6 +340,18 @@ export default function Home() {
                   onChange={handleQueryParameterChange}
                   optional
                 />
+                <Select
+                  label="Payment Plan"
+                  name="planSelection"
+                  selected={{ name: queryParametersState.planSelection }}
+                  onChange={handlePlanChange}
+                  optional
+                  options={[
+                    { name: "basic" },
+                    { name: "regular" },
+                    { name: "premium" },
+                  ]}
+                />
 
                 <div>
                   <div className="h-px w-full bg-gray-300 mt-9 mb-6" />
@@ -418,6 +442,9 @@ export default function Home() {
                             }),
                             ...(queryParametersState.hosting_type && {
                               hosting_type: queryParametersState.hosting_type,
+                            }),
+                            ...(queryParametersState.planSelection && {
+                              plan_selection: queryParametersState.planSelection,
                             }),
                           }}
                         />
