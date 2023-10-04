@@ -440,11 +440,12 @@ export default function Home() {
                             ...(queryParametersState.next && {
                               next: queryParametersState.next,
                             }),
+                            ...(queryParametersState.planSelection && {
+                              plan_selection:
+                                queryParametersState.planSelection,
+                            }),
                             ...(queryParametersState.hosting_type && {
                               hosting_type: queryParametersState.hosting_type,
-                            }),
-                            ...(queryParametersState.planSelection && {
-                              plan_selection: queryParametersState.planSelection,
                             }),
                           }}
                         />
