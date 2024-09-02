@@ -10,6 +10,7 @@ import jsx from "react-syntax-highlighter/dist/cjs/languages/prism/jsx";
 import prism from "react-syntax-highlighter/dist/cjs/styles/prism/prism";
 import { dedent } from "ts-dedent";
 import { useRouter } from "next/router";
+import Select from "../components/Select";
 
 SyntaxHighlighter.registerLanguage("jsx", jsx);
 
@@ -27,6 +28,9 @@ type QueryParametersType = {
   forwardState: string;
   next: string;
   hosting_type: string;
+  planSelection: string;
+  connectClientUser: string;
+  clientId: string;
 };
 
 const demoPartnerId = "f167CmPA";
@@ -50,12 +54,23 @@ export default function Home() {
       forwardState: "",
       next: "",
       hosting_type: "",
+      planSelection: "",
+      connectClientUser: "",
+      clientId: ""
     });
   const [callbackObject, setcallbackObject] = useState<CallbackObjectType>();
   const [copied, setCopied] = useState<boolean>(false)
+  const [urlCopied, setUrlCopied] = useState<boolean>(false);
 
   const router = useRouter();
   const { id } = router.query;
+
+  const handlePlanChange = (v: {name: string}) => {
+    setQueryParamatersState((queryParametersState) => ({
+      ...queryParametersState,
+      planSelection: v.name,
+    }));
+  }
 
   const handleQueryParameterChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -74,6 +89,7 @@ export default function Home() {
       ...queryParametersState,
       ...(name === "next" && { [name]: checked ? "login" : "" }),
       ...(name === "hosting_type" && { [name]: checked ? "onpremise" : "" }),
+      ...(name === "connectClientUser" && { [name]: checked ? "true" : "" }),
     }));
   }
 
@@ -84,10 +100,12 @@ export default function Home() {
   useEffect(() => {
     const timeoutCopied = window.setTimeout(() => {
         setCopied(false)
+        setUrlCopied(false);
     }, 5000);
 
     return () => window.clearTimeout(timeoutCopied );
-  }, [copied])
+  }, [copied, urlCopied])
+
 
   const handleCallback = (callbackObject: CallbackObjectType) => {
     /* The callback function returns the client ID as well as all channel IDs, for which you're enabled to fetch the API key via the Partner API */
@@ -123,7 +141,7 @@ export default function Home() {
   }, [id]);
 
 
-  const returnQueryParameterLiteral = () => {
+  const returnQueryParameterLiteral = (url?: boolean) => {
   
     const parameters = [
       { stateVar: "email", queryParam: "email" },
@@ -133,6 +151,9 @@ export default function Home() {
       { stateVar: "redirectUrl", queryParam: "redirect_url" },
       { stateVar: "next", queryParam: "next" },
       { stateVar: "hosting_type", queryParam: "hosting_type" },
+      { stateVar: "planSelection", queryParam: "plan_selection" },
+      { stateVar: "connectClientUser", queryParam: "connect_client_user" },
+      { stateVar: "clientId", queryParam: "client_id" },
     ];
 
     var literalStringArr: string[] = [];
@@ -141,16 +162,28 @@ export default function Home() {
       if (
         queryParametersState[v.stateVar as keyof QueryParametersType] !== ""
       ) {
-        literalStringArr.push(
-          `${v.queryParam}: "${
-            queryParametersState[v.stateVar as keyof QueryParametersType]
-          }"`
-        );
+        if (url) {
+          literalStringArr.push(
+            `${v.queryParam}=${
+              queryParametersState[v.stateVar as keyof QueryParametersType]
+            }`
+          );
+        } else {
+          literalStringArr.push(
+            `${v.queryParam}: "${
+              queryParametersState[v.stateVar as keyof QueryParametersType]
+            }"`
+          );
+        }
       }
     });
 
     if (literalStringArr.length > 0) {
-      return (`queryParameters={{\n\t${literalStringArr.join(",\n\t")}\n}}`);
+      if (url) {
+        return `${number ? "&" : "?"}${literalStringArr.join("&")}`;
+      } else {
+        return `queryParameters={{\n\t${literalStringArr.join(",\n\t")}\n}}`;
+      }
     } else {
       return ``
     }
@@ -184,6 +217,9 @@ export default function Home() {
       { stateVar: "partnerPayload", queryParam: "partner" },
       { stateVar: "forwardState", queryParam: "state" },
       { stateVar: "redirectUrl", queryParam: "redirect_url" },
+      { stateVar: "planSelection", queryParam: "plan_selection" },
+      { stateVar: "connectClientUser", queryParam: "connect_client_user" },
+      { stateVar: "clientId", queryParam: "client_id" },
     ];
 
     var literalStringArr: string[] = [];
@@ -207,6 +243,24 @@ export default function Home() {
   
     return textBase.concat( "\n/>")
   }
+
+
+  const generateSignupLink = (): string => {
+    let textBase = `https://hub.360dialog.com/dashboard/app/${partnerId ? partnerId : "{partner_id}"}/permissions`
+
+    if (number) {
+      textBase = textBase.concat(`?number="${number}"`);
+    }
+
+
+    let queryParams = returnQueryParameterLiteral(true);
+    if (queryParams !== ``) {
+      textBase = textBase.concat("", queryParams);
+    }
+
+    return textBase;
+  };
+
 
   return (
     <div className="w-screen h-screen overflow-hidden">
@@ -328,6 +382,18 @@ export default function Home() {
                   onChange={handleQueryParameterChange}
                   optional
                 />
+                <Select
+                  label="Payment Plan"
+                  name="planSelection"
+                  selected={{ name: queryParametersState.planSelection }}
+                  onChange={handlePlanChange}
+                  optional
+                  options={[
+                    { name: "basic" },
+                    { name: "regular" },
+                    { name: "premium" },
+                  ]}
+                />
 
                 <div>
                   <div className="h-px w-full bg-gray-300 mt-9 mb-6" />
@@ -348,6 +414,44 @@ export default function Home() {
                   />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[26px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 </label>
+
+                <div>
+                  <div className="h-px w-full bg-gray-300 mt-9 mb-6" />
+                  <p className="text-sm font-medium text-gray-900">
+                    Account Sharing
+                  </p>
+                </div>
+
+                <div className="rounded rounded-2xl border border-red-600 py-2 px-4 bg-red-100 bg-opacity-30">
+                  <p className="block text-sm font-regular text-red-600">
+                    Please note: The following parameters shall only be used by
+                    partners hosting their own version of the Embedded Signup.
+                    Using these parameters will allow you to add a client user
+                    to an existing client instance and therefore trigger number
+                    activation.
+                  </p>
+                </div>
+
+                <label className="inline-flex relative items-center justify-between cursor-pointer mt-2 pr-1">
+                  <span className="block text-sm font-medium text-gray-500">
+                    Connect client user flow
+                  </span>
+                  <input
+                    type="checkbox"
+                    name="connectClientUser"
+                    value={queryParametersState.connectClientUser}
+                    className="sr-only peer"
+                    onChange={handleToggleChange}
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[26px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                </label>
+
+                <Input
+                  label="360dialog Client ID"
+                  name="clientId"
+                  value={queryParametersState.clientId}
+                  onChange={handleQueryParameterChange}
+                />
 
                 {showScrollLabel && (
                   <div
@@ -416,6 +520,10 @@ export default function Home() {
                             ...(queryParametersState.next && {
                               next: queryParametersState.next,
                             }),
+                            ...(queryParametersState.planSelection && {
+                              plan_selection:
+                                queryParametersState.planSelection,
+                            }),
                             ...(queryParametersState.hosting_type && {
                               hosting_type: queryParametersState.hosting_type,
                             }),
@@ -428,6 +536,80 @@ export default function Home() {
                         )}
                       </>
                     )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col grow pt-6">
+                <div className="flex flex-row items-baseline justify-between w-full pb-2">
+                  <p className="text-md font-bold text-gray-700 flex-none">
+                    Signup Link
+                  </p>
+                </div>
+                <div className="relative bg-gray-50 rounded-md grow text text-gray-900 text-sm pt-8">
+                  {mounted && (
+                    <SyntaxHighlighter
+                      language="jsx"
+                      style={prism}
+                      customStyle={{ background: "transparent" }}
+                      wrapLines
+                      lineProps={{
+                        style: {
+                          wordBreak: "break-all",
+                          whiteSpace: "pre-wrap",
+                        },
+                      }}
+                      className="w-full h-full p-6 max-w-xs lg:max-w-md xl:max-w-lg 2xl:max-w-full m-0"
+                    >
+                      {generateSignupLink()}
+                    </SyntaxHighlighter>
+                  )}
+                  <div className="absolute top-3 right-3">
+                    <Button
+                      onClick={() => {
+                        navigator.clipboard.writeText(generateSignupLink());
+                        setUrlCopied(true);
+                      }}
+                      outlined
+                    >
+                      {urlCopied ? (
+                        <>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth="1.5"
+                            stroke="currentColor"
+                            className="w-4 h-4"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75"
+                            />
+                          </svg>
+                          Copied
+                        </>
+                      ) : (
+                        <>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth="1.5"
+                            stroke="currentColor"
+                            className="w-4 h-4"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"
+                            />
+                          </svg>
+                          Copy URL
+                        </>
+                      )}
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -488,7 +670,7 @@ export default function Home() {
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
-                            stroke-width="1.5"
+                            strokeWidth="1.5"
                             stroke="currentColor"
                             className="w-4 h-4"
                           >
@@ -506,7 +688,7 @@ export default function Home() {
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
-                            stroke-width="1.5"
+                            strokeWidth="1.5"
                             stroke="currentColor"
                             className="w-4 h-4"
                           >
